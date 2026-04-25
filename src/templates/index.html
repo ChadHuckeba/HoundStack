@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guest Welcome Wallboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Playfair+Display:ital,wght@1,700&display=swap');
+        
+        :root {
+            --accent: #f59e0b;
+            --accent-glow: rgba(245, 158, 11, 0.2);
+        }
+
+        body { 
+            font-family: 'Outfit', sans-serif;
+            background-color: #020617;
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(245, 158, 11, 0.05) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(30, 58, 138, 0.1) 0px, transparent 50%);
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #f59e0b, #fbbf24);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .animate-blink {
+            animation: blink 2s step-start infinite;
+        }
+
+        @keyframes blink {
+            50% { opacity: 0.3; }
+        }
+
+        .serif { font-family: 'Playfair Display', serif; }
+
+        .tabular-nums {
+            font-variant-numeric: tabular-nums;
+        }
+
+        .pup-image-container {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            background: rgba(0,0,0,0.4);
+        }
+
+        .pup-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen p-6 overflow-hidden flex flex-col items-center justify-center">
+
+    <div class="fixed inset-0 pointer-events-none overflow-hidden opacity-10">
+        <i class="fas fa-paw text-[40rem] absolute -bottom-20 -left-20 text-slate-800 rotate-12"></i>
+    </div>
+
+    <main class="max-w-[1800px] w-full grid grid-cols-12 gap-6 relative z-10 h-[92vh]">
+        
+        <!-- COLUMN 1: WELCOME & HOST -->
+        <div class="col-span-3 flex flex-col gap-4 h-full">
+            
+            <div class="space-y-1 text-left">
+                <div class="flex items-baseline gap-2">
+                    <div class="text-5xl font-light tracking-tighter text-white uppercase flex items-center gap-0">
+                        <span id="clock-hours" class="tabular-nums">--</span>
+                        <span class="animate-blink px-1 text-white opacity-100" style="margin-top: -0.1em;">:</span>
+                        <span id="clock-mins" class="tabular-nums">--</span>
+                        <span id="clock-ampm" class="text-lg opacity-40 ml-2 font-bold">--</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <span class="relative flex h-1.5 w-1.5">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-amber-500"></span>
+                    </span>
+                    <span class="text-[0.55rem] font-bold text-slate-500 uppercase tracking-widest">Live • Pflugerville</span>
+                </div>
+            </div>
+
+            <!-- Welcome Card -->
+            <div class="glass rounded-[2rem] p-6 border-amber-500/10 flex flex-col gap-4">
+                <div class="overflow-visible flex flex-col">
+                    <div class="text-white text-xl font-light tracking-tight text-left">Welcome,</div>
+                    <div class="serif text-5xl text-gradient leading-tight mx-auto text-center w-full">
+                        {{ pup_name }}
+                    </div>
+                </div>
+
+                <div class="relative mx-auto w-full">
+                    {% if pup_image %}
+                    <div class="pup-image-container shadow-2xl">
+                        <img src="{{ pup_image }}" alt="{{ pup_name }}">
+                    </div>
+                    {% else %}
+                    <div class="pup-image-container bg-slate-800/50 flex items-center justify-center border-dashed border-slate-700">
+                        <div class="text-center p-4">
+                            <i class="fas fa-camera text-slate-600 text-4xl mb-2"></i>
+                            <p class="text-slate-500 text-[0.5rem] font-bold uppercase tracking-widest leading-tight">Guest Photo Placeholder</p>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Host Info Card -->
+            <div class="glass rounded-[1.5rem] p-5 border-amber-500/10 flex flex-col items-center justify-center gap-4 flex-1 min-h-0 overflow-hidden">
+                <div class="text-center">
+                    <div class="text-white text-2xl font-black leading-none tracking-tighter mb-1">Chad Huckeba</div>
+                    <div class="text-amber-500 text-[0.6rem] tracking-[0.3em] uppercase font-black">Scan for Linktree</div>
+                </div>
+                <div class="p-1.5 bg-white rounded-2xl shadow-2xl shrink-0 overflow-hidden w-32 h-32">
+                    <img src="/static/assets/ui/chad_linktree.png" alt="QR Code" class="w-full h-full object-cover">
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 2: ENVIRONMENT & SCHEDULE -->
+        <div class="col-span-5 flex flex-col gap-4 h-full">
+            <div class="bg-white/5 rounded-[2rem] p-6 border border-white/5">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-4">
+                        <i class="fas {{ weather.current.icon }} text-3xl text-amber-500"></i>
+                        <div>
+                            <div class="text-3xl font-bold tracking-tighter">{{ weather.current.temp }}</div>
+                            <div class="text-slate-500 text-[0.5rem] font-bold uppercase tracking-widest mt-0.5">{{ weather.current.condition }}</div>
+                        </div>
+                    </div>
+                    <div class="text-right text-[0.6rem] font-black text-slate-400 uppercase leading-none space-y-1.5">
+                        <div class="text-slate-200">H: {{ weather.current.high }}</div>
+                        <div>L: {{ weather.current.low }}</div>
+                        <div class="text-blue-400 text-[0.5rem] pt-0.5">
+                            <i class="fas fa-droplet mr-0.5 opacity-50"></i>{{ weather.current.rain_prob }}
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-5 gap-2 pt-4 border-t border-white/10">
+                    {% for day in weather.forecast %}
+                    <div class="text-center group">
+                        <div class="text-[0.45rem] font-black text-slate-600 uppercase mb-1 tracking-widest">{{ day.day }}</div>
+                        <i class="fas {{ day.icon }} text-amber-500/80 text-base mb-1"></i>
+                        <div class="text-sm font-bold text-slate-300 leading-none">{{ day.temp }}</div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="glass rounded-[2rem] p-10 relative overflow-hidden flex-1 border-white/5 min-h-0">
+                <h3 class="text-2xl font-bold mb-8 flex items-center gap-3 tracking-tight text-white/90">
+                    <i class="fas fa-calendar-day text-amber-500"></i>
+                    Daily Rhythm
+                </h3>
+                <div class="space-y-3 relative pr-2 overflow-y-auto h-[calc(100%-60px)]">
+                    {% for item in schedule %}
+                    <div class="flex items-center gap-4 group">
+                        <div class="z-10 w-8 h-8 rounded-lg glass border-amber-500/20 flex items-center justify-center text-sm">
+                            {{ item.icon }}
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-baseline">
+                                <div class="text-white text-base font-semibold group-hover:text-amber-400 leading-none">{{ item.activity }}</div>
+                                <div class="text-amber-500/70 font-black text-[0.55rem] uppercase tracking-widest pl-2">{{ item.time }}</div>
+                            </div>
+                            <div class="h-[1px] w-full bg-slate-800/50 mt-1"></div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUMN 3: SAFETY & TOPICS -->
+        <div class="col-span-4 flex flex-col gap-4 h-full">
+            <!-- Medical Guardian Card (Expanded) -->
+            <div class="bg-red-500/5 border border-red-500/20 rounded-[2rem] p-8 flex items-center gap-6">
+                <div class="w-20 h-20 rounded-2xl bg-white flex items-center justify-center shrink-0 overflow-hidden shadow-lg border-2 border-red-500/20">
+                    <img src="/static/assets/ui/heart_of_texas.png" alt="Heart of Texas" class="w-full h-full object-cover">
+                </div>
+                <div class="flex-1">
+                    <div class="text-red-500 font-bold tracking-widest text-[0.6rem] uppercase mb-1.5">24hr Veterinarian</div>
+                    <div class="text-white text-2xl font-black leading-tight tracking-tight mb-1">{{ vet.name }}</div>
+                    <div class="text-red-400 font-black text-2xl tracking-tighter leading-none">{{ vet.phone }}</div>
+                </div>
+            </div>
+
+            <div class="glass rounded-[2rem] p-10 relative overflow-hidden flex-1 border-white/5 min-h-0">
+                <h4 class="text-amber-500/70 text-[0.6rem] uppercase tracking-[0.4em] font-black mb-8 flex items-center gap-3">
+                    <span class="w-12 h-px bg-amber-500/30"></span> Discussion Topics
+                </h4>
+                <div class="space-y-8 h-[calc(100%-120px)] overflow-hidden">
+                    <div class="group">
+                        <div class="flex items-center gap-3 mb-1">
+                            <div class="w-1 h-1 rounded-full bg-amber-500"></div>
+                            <div class="text-white text-xl serif leading-none">Sleep Details</div>
+                        </div>
+                        <p class="text-slate-500 text-[0.55rem] font-bold uppercase tracking-widest pl-4">Arrangements & Night Routine</p>
+                    </div>
+                    <div class="group">
+                        <div class="flex items-center gap-3 mb-1">
+                            <div class="w-1 h-1 rounded-full bg-amber-500"></div>
+                            <div class="text-white text-xl serif leading-none">Social & Safety</div>
+                        </div>
+                        <p class="text-slate-500 text-[0.55rem] font-bold uppercase tracking-widest pl-4">Fears, Triggers & Reactivity</p>
+                    </div>
+                    <div class="group">
+                        <div class="flex items-center gap-3 mb-1">
+                            <div class="w-1 h-1 rounded-full bg-amber-500"></div>
+                            <div class="text-white text-xl serif leading-none">House Habits</div>
+                        </div>
+                        <p class="text-slate-500 text-[0.55rem] font-bold uppercase tracking-widest pl-4">Crate Training & Chewing</p>
+                    </div>
+                    <div class="group">
+                        <div class="flex items-center gap-3 mb-1">
+                            <div class="w-1 h-1 rounded-full bg-amber-500"></div>
+                            <div class="text-white text-xl serif leading-none">Behavioral</div>
+                        </div>
+                        <p class="text-slate-500 text-[0.55rem] font-bold uppercase tracking-widest pl-4">Separation & Alone Time</p>
+                    </div>
+                </div>
+                <div class="mt-auto pt-6 border-t border-slate-800 absolute bottom-8 left-8 right-8 text-center">
+                    <div class="text-[0.5rem] text-slate-600 font-bold uppercase tracking-[0.2em] italic leading-relaxed">
+                        Bring something that smells of home! ♥️
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function updateClock() {
+            const now = new Date();
+            let hours = now.getHours();
+            let minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; 
+            minutes = minutes < 10 ? '0'+minutes : minutes;
+            document.getElementById('clock-hours').textContent = hours;
+            document.getElementById('clock-mins').textContent = minutes;
+            document.getElementById('clock-ampm').textContent = ampm;
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
+    </script>
+</body>
+</html>
