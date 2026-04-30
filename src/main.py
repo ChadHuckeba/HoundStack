@@ -121,7 +121,7 @@ SCHEDULE = [
 ]
 
 VET_INFO = {
-    "name": "Heart of Texas (24h)",
+    "name": "Heart of Texas",
     "address": "3675 Gattis School Rd, Round Rock, TX",
     "phone": "512-744-4644",
     "distance": "~12 minutes"
