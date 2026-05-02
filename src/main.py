@@ -9,7 +9,6 @@ from fastapi.staticfiles import StaticFiles
 app = FastAPI(title="HoundStack Wallboard")
 
 # Setup templates and static files
-# Ensure we use an absolute path for BASE_DIR regardless of execution context
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
@@ -126,31 +125,46 @@ VET_INFO = {
 async def read_wallboard(request: Request, pup: str = "Our Guest", img: str = "example_pup.jpg"):
     live_weather = await get_live_weather()
     
-    # Scan for available dogs
+    # Scan for available dogs (Active only, skip 'archive' folder)
     dogs_dir = os.path.join(BASE_DIR, "static", "assets", "dogs")
     available_dogs = []
     if os.path.exists(dogs_dir):
         for filename in os.listdir(dogs_dir):
-            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')) and filename != "example_pup.jpg":
-                # Parse <name>_<mmddyy> format
+            file_path = os.path.join(dogs_dir, filename)
+            if os.path.isdir(file_path) or filename == "example_pup.jpg":
+                continue
+                
+            if filename.lower().endswith(('.png', '.jpg', '.jpeg', '.webp')):
                 name_part = filename.rsplit('.', 1)[0]
-                if '_' in name_part:
-                    name, date_str = name_part.split('_', 1)
-                    # Format mmddyy to MM.DD.YY for display
+                parts = name_part.split('_')
+                
+                if len(parts) == 3:
+                    # New format: [parent]_[pup]_[date]
+                    parent, pup_name, date_str = parts
+                    display_name = f"{parent.capitalize()}_{pup_name.capitalize()}"
+                    if len(date_str) == 6:
+                        display_date = f"{date_str[:2]}.{date_str[2:4]}.{date_str[4:]}"
+                    else:
+                        display_date = date_str
+                elif len(parts) == 2:
+                    # Legacy format: [pup]_[date]
+                    pup_name, date_str = parts
+                    display_name = pup_name.capitalize()
                     if len(date_str) == 6:
                         display_date = f"{date_str[:2]}.{date_str[2:4]}.{date_str[4:]}"
                     else:
                         display_date = date_str
                 else:
-                    name, display_date = name_part, "Unknown"
+                    display_name = name_part.capitalize()
+                    display_date = "Unknown"
                 
                 available_dogs.append({
-                    "name": name.capitalize(),
+                    "display_name": display_name,
                     "date": display_date,
-                    "filename": filename
+                    "filename": filename,
+                    "sort_key": display_name.lower()
                 })
     
-    # Default image logic: If no image provided, use example_pup.jpg
     pup_image = f"/static/assets/dogs/{img}"
 
     return templates.TemplateResponse(
@@ -163,11 +177,11 @@ async def read_wallboard(request: Request, pup: str = "Our Guest", img: str = "e
             "weather": live_weather,
             "pup_name": pup,
             "pup_image": pup_image,
-            "available_dogs": sorted(available_dogs, key=lambda x: x['name']),
+            "available_dogs": sorted(available_dogs, key=lambda x: x['sort_key']),
             "current_time": datetime.now().strftime("%I:%M %p")
         }
     )
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+    uvicorn.run("main:app", host="0.0.0.0", port=8080, reload=True)
