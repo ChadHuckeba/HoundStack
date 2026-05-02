@@ -131,10 +131,10 @@
 
                             {% for dog in available_dogs %}
                             <button class="pup-select-item w-full text-left bg-slate-900/40 hover:bg-amber-500/10 border border-white/5 hover:border-amber-500/30 rounded-xl px-4 py-3 transition-all group/item flex items-center justify-between" 
-                                    data-name="{{ dog.name }}" data-img="{{ dog.filename }}">
+                                    data-name="{{ dog.display_name }}" data-img="{{ dog.filename }}">
                                 <div>
-                                    <div class="text-sm font-bold text-white group-hover/item:text-amber-400 transition-colors">{{ dog.name }}</div>
-                                    <div class="text-[0.6rem] text-slate-500 font-medium uppercase tracking-tighter">Joined: {{ dog.date }}</div>
+                                    <div class="text-sm font-bold text-white group-hover/item:text-amber-400 transition-colors">{{ dog.display_name }}</div>
+                                    <div class="text-[0.6rem] text-slate-500 font-medium uppercase tracking-tighter">Intake: {{ dog.date }}</div>
                                 </div>
                                 <i class="fas fa-chevron-right text-[0.5rem] opacity-0 group-hover/item:opacity-30 transition-all"></i>
                             </button>
@@ -143,7 +143,7 @@
                             {% if not available_dogs %}
                             <div class="py-6 text-center">
                                 <i class="fas fa-folder-open text-slate-800 text-2xl mb-2 block"></i>
-                                <div class="text-[0.55rem] font-bold text-slate-700 uppercase tracking-widest leading-tight">No client profiles found in /assets/dogs/</div>
+                                <div class="text-[0.55rem] font-bold text-slate-700 uppercase tracking-widest leading-tight">No client profiles found</div>
                             </div>
                             {% endif %}
 
@@ -327,7 +327,6 @@
         setInterval(updateClock, 1000);
         updateClock();
 
-        // Switch Dog UI Logic
         const switchBtn = document.getElementById('switch-dog-btn');
         const switchPanel = document.getElementById('switch-dog-panel');
         const selectItems = document.querySelectorAll('.pup-select-item');
@@ -347,7 +346,6 @@
                 if (img) {
                     url.searchParams.set('img', img);
                 } else {
-                    // For safety, though the buttons now have img set
                     url.searchParams.set('img', 'example_pup.jpg');
                 }
                 
@@ -355,7 +353,6 @@
             });
         });
 
-        // Close panel when clicking outside
         document.addEventListener('click', (e) => {
             if (!switchBtn.contains(e.target) && !switchPanel.contains(e.target)) {
                 switchPanel.classList.add('hidden');
